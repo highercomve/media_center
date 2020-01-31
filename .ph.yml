@@ -1,0 +1,6 @@
+deploy:
+  default:
+    DEVICE_ID: 5db75055f924e50009c97bc9
+    TOKEN: $PH_TOKEN
+    PH_HOST: https://api2.pantahub.com
+    DEVICE_DOCKER: ./Dockerfile

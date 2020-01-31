@@ -1,0 +1,40 @@
+FROM ubuntu
+
+# RUN mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc && echo ':arm:M::\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-arm-static:' > /proc/sys/fs/binfmt_misc/register 
+
+ENV HOME /root
+ENV DEBIAN_FRONTEND noninteractive
+ENV TERM="xterm" LANG="C.UTF-8" LC_ALL="C.UTF-8"
+
+RUN \
+# Install initial dependencies
+    apt-get update; apt-get install -y systemd wget gnupg dbus udev software-properties-common ntfs-3g && \
+    systemctl set-default multi-user.target && \
+# Add plex tv repository
+    add-apt-repository -y ppa:shevchuk/dnscrypt-proxy && \
+    echo "deb https://downloads.plex.tv/repo/deb public main" | tee /etc/apt/sources.list.d/plexmediaserver.list && \
+    wget https://downloads.plex.tv/plex-keys/PlexSign.key -O - | apt-key add - && \
+# Install dependencies 
+    apt-get update&& apt-get install -y --option=Dpkg::Options::=--force-confdef \
+    openvpn \
+    transmission-daemon \
+    plexmediaserver \ 
+    dnscrypt-proxy && \
+    echo "nameserver 127.0.0.1 options edns0" > /etc/resolv.conf && \
+# Clean 
+    apt-get -y autoremove && \
+    apt-get -y clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /tmp/* && \
+    rm -rf /var/tmp/* && \
+    systemctl enable plexmediaserver
+
+COPY transmission/settings.json /etc/transmission-daemon/settings.json
+COPY plex/plexmediaserver /etc/default/plexmediaserver
+COPY openvpn/* /etc/openvpn/
+COPY dnscrypt-proxy/* /etc/dnscrypt-proxy/
+
+EXPOSE 32400/tcp 3005/tcp 8324/tcp 32469/tcp 1900/udp 32410/udp 32412/udp 32413/udp 32414/udp 9091 1194 53
+STOPSIGNAL SIGRTMIN+3
+
+CMD ["/bin/bash", "-c", "exec /sbin/init --log-target=journal 3>&1"]

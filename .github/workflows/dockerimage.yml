@@ -1,0 +1,16 @@
+name: Docker Image CI
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+    - name: Get qemu
+      run: docker run --rm --privileged multiarch/qemu-user-static:register || true
+    - name: GitHub Docker Action
+      uses: matootie/github-docker@v2.2.1
+      with:
+        # GitHub Repository Token to log in using.
+        accessToken: ${{ secrets.GITHUB_TOKEN }}
+        context: . 
