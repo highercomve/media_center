@@ -23,6 +23,7 @@ RUN \
     dbus \
     udev \
     software-properties-common \
+    vim \
     ntfs-3g && \
     systemctl set-default multi-user.target && \
 # Add repositories
@@ -31,10 +32,11 @@ RUN \
     apt-get update && apt-get install -y --option=Dpkg::Options::=--force-confdef \
     openvpn \
     transmission-daemon \
-    dnscrypt-proxy
+    dnscrypt-proxy && \
+    systemctl enable openvpn@client
 RUN \
 # Install plex
-    wget -O plex.deb https://downloads.plex.tv/plex-media-server-new/1.18.5.2309-f5213a238/debian/plexmediaserver_1.18.5.2309-f5213a238_armhf.deb && \
+    # wget -O plex.deb https://downloads.plex.tv/plex-media-server-new/1.18.5.2309-f5213a238/debian/plexmediaserver_1.18.5.2309-f5213a238_armhf.deb && \
     # dpkg --force-confdef -i plex.deb && \
     # systemctl enable plexmediaserver.service && \
 # Clean 
@@ -46,7 +48,8 @@ RUN \
 
 COPY transmission/settings.json /etc/transmission-daemon/settings.json
 COPY plex/plexmediaserver /etc/default/plexmediaserver
-COPY openvpn/* /etc/openvpn/
+COPY openvpn/client.conf /etc/openvpn/client.conf
+COPY openvpn/update-resolv-conf /etc/openvpn/update-resolv-conf
 COPY dnscrypt-proxy/* /etc/dnscrypt-proxy/
 # RUN echo "nameserver 127.0.0.1 options edns0" > /etc/resolv.conf
 
