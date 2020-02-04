@@ -1,0 +1,10 @@
+author "Sergio Marirn"
+description "Start openrestarter for client.conf changes"
+version "1.0"
+
+start on runlevel [2345]
+stop on runlevel [016]
+
+respawn
+
+exec /usr/bin/openvpn-restarter

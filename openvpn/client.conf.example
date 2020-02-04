@@ -15,10 +15,8 @@
 # from the server.
 client
 
-pull-filter ignore "redirect-gateway" 
-pull-filter ignore "route 192.168.1.0" 
-# iroute 192.168.1.0 255.255.255.0
-
+# Use the same setting as you are using on
+# the server.
 # On most systems, the VPN will not function
 # unless you partially or fully disable
 # the firewall for the TUN/TAP interface.
@@ -41,8 +39,7 @@ proto udp
 # The hostname/IP and port of the server.
 # You can have multiple remote entries
 # to load balance between the servers.
-remote do2.escuelaweb.net 1194
-;remote my-server-2 1194
+remote my-server-2 1194
 
 # Choose a random host from the remote
 # list for load-balancing.  Otherwise
@@ -87,9 +84,9 @@ persist-tun
 # a separate .crt/.key file pair
 # for each client.  A single ca
 # file can be used for all clients.
-ca /pantavisor/user-meta/openvpn.ca.crt
-cert /pantavisor/user-meta/openvpn.client.crt
-key /pantavisor/user-meta/openvpn.client.key
+ca ca.crt
+cert client.crt
+key client.key
 
 # Verify server certificate by checking that the
 # certicate has the correct key usage set.
@@ -107,7 +104,7 @@ remote-cert-tls server
 
 # If a tls-auth key is used on the server
 # then every client must also have the key.
-tls-auth /pantavisor/user-meta/openvpn.ta.key 1
+tls-auth ta.key 1
 
 # Select a cryptographic cipher.
 # If the cipher option is used on the server
@@ -133,3 +130,15 @@ script-security 2
 up /etc/openvpn/update-resolv-conf
 down /etc/openvpn/update-resolv-conf
 
+<ca>
+CA PEM STRING HERE
+</ca>
+<cert>
+FULL CLIENT CERT
+</cert>
+<key>
+CLIENT KEY PEM
+</key>
+<tls-auth>
+OPENVPN TLS STATIC KEY PEM
+</tls-auth>

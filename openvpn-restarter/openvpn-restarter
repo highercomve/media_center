@@ -1,0 +1,30 @@
+#!/bin/bash -x
+
+USER_META_CONFIG_FILE=/pantavisor/user-meta/openvpn.client.conf
+OPENVPN_CLIENT_CONFIG=/etc/openvpn/client.conf
+
+while true
+do
+  if [ ! -f $USER_META_CONFIG_FILE ]; then
+        systemctl stop openvpn@client
+        sleep 5
+        continue
+  fi
+  
+  res=0
+  dif=`diff $USER_META_CONFIG_FILE $OPENVPN_CLIENT_CONFIG`
+  if [ ! $? -eq 0 ]; then
+    res=1
+    sed 's/\\//g' $USER_META_CONFIG_FILE > $OPENVPN_CLIENT_CONFIG
+  fi
+
+  systemctl status openvpn@client  | grep "active (running)"
+  ret=$?
+  if [ $ret -ne 0 ] || [ $res -eq 1 ]; then
+    systemctl restart openvpn@client
+  else
+    sleep 5
+    continue
+  fi
+  sleep 30
+done

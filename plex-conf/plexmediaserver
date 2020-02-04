@@ -20,4 +20,4 @@ export PLEX_MEDIA_SERVER_USER=plex
 
 # Uncomment this to use syslog for logging instead of
 # sending logs to Plex Media Server.log
-#export PLEX_MEDIA_SERVER_USE_SYSLOG=true
+export PLEX_MEDIA_SERVER_USE_SYSLOG=true

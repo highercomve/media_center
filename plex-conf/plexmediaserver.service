@@ -1,0 +1,27 @@
+[Unit]
+Description=Plex Media Server
+After=network.target network-online.target
+
+[Service]
+Environment="PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR=/var/lib/plexmediaserver/Library/Application Support"
+Environment=PLEX_MEDIA_SERVER_HOME=/usr/lib/plexmediaserver
+Environment=PLEX_MEDIA_SERVER_MAX_PLUGIN_PROCS=6
+Environment=PLEX_MEDIA_SERVER_TMPDIR=/tmp
+Environment=PLEX_MEDIA_SERVER_INFO_VENDOR=Ubuntu
+Environment=PLEX_MEDIA_SERVER_INFO_DEVICE=PC
+Environment=PLEX_MEDIA_SERVER_INFO_MODEL=arm
+Environment=LD_LIBRARY_PATH=/usr/lib/plexmediaserver/lib 
+Environment=PLEX_MEDIA_SERVER_USER=plex
+Environment=PLEX_MEDIA_SERVER_INFO_PLATFORM_VERSION=MediaCenter
+ExecStartPre=/bin/sh -c '/usr/bin/test -d "/var/lib/plexmediaserver/Library/Application Support" || /bin/mkdir -p "/var/lib/plexmediaserver/Library/Application Support"'
+ExecStart=/usr/lib/plexmediaserver/PlexMediaServer
+Type=simple
+User=root
+Group=root
+Restart=on-failure
+RestartSec=5
+StartLimitInterval=60s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target
